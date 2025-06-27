@@ -1,6 +1,6 @@
 langchain
 langchain-community
-google-generativeai
+langchain-google-genai
 chromadb
 PyMuPDF
 tqdm
