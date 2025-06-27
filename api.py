@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from core import ingest, qa
 import os
+import shutil
 
 app = Flask(__name__, static_folder='frontend')
 CORS(app)
@@ -17,6 +18,14 @@ def upload_pdf():
     file_path = os.path.join('/tmp/vectorstore', file.filename)
     print(f"[DEBUG] Guardando archivo en {file_path}")
     file.save(file_path)
+    # --- BORRAR VECTORSTORE ANTES DE INGESTAR ---
+    vectorstore_path = '/tmp/vectorstore'
+    try:
+        if os.path.exists(vectorstore_path):
+            shutil.rmtree(vectorstore_path)
+            print(f"[DEBUG] Vectorstore anterior eliminada: {vectorstore_path}")
+    except Exception as e:
+        print(f"[ERROR] No se pudo eliminar vectorstore: {e}")
     try:
         from core import ingest
         ingest.process_pdf(file_path)
