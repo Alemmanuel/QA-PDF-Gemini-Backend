@@ -1,6 +1,6 @@
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from backend.core.vector import get_vectorstore
+from core.vector import get_vectorstore
 
 def process_pdf(pdf_path):
     loader = PyPDFLoader(pdf_path)

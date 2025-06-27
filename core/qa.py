@@ -1,6 +1,6 @@
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
-from backend.core.vector import get_vectorstore
+from core.vector import get_vectorstore
 
 def ask_question(question):
     vectordb = get_vectorstore()
