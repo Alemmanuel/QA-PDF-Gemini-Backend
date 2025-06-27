@@ -10,6 +10,14 @@ CORS(app)
 @app.route('/upload', methods=['POST'])
 def upload_pdf():
     print("[DEBUG] Recibida petición /upload")
+    # --- BORRAR VECTORSTORE ANTES DE GUARDAR EL PDF ---
+    vectorstore_path = '/tmp/vectorstore'
+    try:
+        if os.path.exists(vectorstore_path):
+            shutil.rmtree(vectorstore_path)
+            print(f"[DEBUG] Vectorstore anterior eliminada: {vectorstore_path}")
+    except Exception as e:
+        print(f"[ERROR] No se pudo eliminar vectorstore: {e}")
     if 'file' not in request.files:
         print("[ERROR] No file uploaded")
         return jsonify({'error': 'No file uploaded'}), 400
@@ -18,14 +26,6 @@ def upload_pdf():
     file_path = os.path.join('/tmp/vectorstore', file.filename)
     print(f"[DEBUG] Guardando archivo en {file_path}")
     file.save(file_path)
-    # --- BORRAR VECTORSTORE ANTES DE INGESTAR ---
-    vectorstore_path = '/tmp/vectorstore'
-    try:
-        if os.path.exists(vectorstore_path):
-            shutil.rmtree(vectorstore_path)
-            print(f"[DEBUG] Vectorstore anterior eliminada: {vectorstore_path}")
-    except Exception as e:
-        print(f"[ERROR] No se pudo eliminar vectorstore: {e}")
     try:
         from core import ingest
         ingest.process_pdf(file_path)
