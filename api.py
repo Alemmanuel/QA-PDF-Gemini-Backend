@@ -16,14 +16,16 @@ def upload_pdf():
         if os.path.exists(vectorstore_path):
             shutil.rmtree(vectorstore_path)
             print(f"[DEBUG] Vectorstore anterior eliminada: {vectorstore_path}")
+        os.makedirs(vectorstore_path, exist_ok=True)
+        # Asegurar permisos de escritura
+        os.chmod(vectorstore_path, 0o777)
     except Exception as e:
-        print(f"[ERROR] No se pudo eliminar vectorstore: {e}")
+        print(f"[ERROR] No se pudo eliminar o crear vectorstore: {e}")
     if 'file' not in request.files:
         print("[ERROR] No file uploaded")
         return jsonify({'error': 'No file uploaded'}), 400
     file = request.files['file']
-    os.makedirs('/tmp/vectorstore', exist_ok=True)
-    file_path = os.path.join('/tmp/vectorstore', file.filename)
+    file_path = os.path.join(vectorstore_path, file.filename)
     print(f"[DEBUG] Guardando archivo en {file_path}")
     file.save(file_path)
     try:
