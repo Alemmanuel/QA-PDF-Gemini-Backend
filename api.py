@@ -8,16 +8,22 @@ CORS(app)
 
 @app.route('/upload', methods=['POST'])
 def upload_pdf():
+    print("[DEBUG] Recibida petición /upload")
     if 'file' not in request.files:
+        print("[ERROR] No file uploaded")
         return jsonify({'error': 'No file uploaded'}), 400
     file = request.files['file']
-    os.makedirs('vectorstore', exist_ok=True)
-    file_path = os.path.join('vectorstore', file.filename)
+    os.makedirs('/tmp/vectorstore', exist_ok=True)
+    file_path = os.path.join('/tmp/vectorstore', file.filename)
+    print(f"[DEBUG] Guardando archivo en {file_path}")
     file.save(file_path)
     try:
+        from core import ingest
         ingest.process_pdf(file_path)
+        print("[DEBUG] PDF procesado con éxito")
         return jsonify({'status': 'ok'})
     except Exception as e:
+        print(f"[ERROR] Fallo en process_pdf: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/ask', methods=['POST'])
