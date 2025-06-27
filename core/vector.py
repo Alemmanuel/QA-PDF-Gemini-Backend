@@ -1,15 +1,18 @@
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 
 CHROMA_DIR = "./vectorstore"
 _vectordb = None
 
-def get_vectorstore():
+def get_vectorstore(path=None):
+    if path is None:
+        import os
+        path = os.environ.get('VECTORSTORE_PATH', '/tmp/vectorstore')
     global _vectordb
     if _vectordb is None:
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         _vectordb = Chroma(
-            persist_directory=CHROMA_DIR,
+            persist_directory=path,
             embedding_function=embeddings
         )
     return _vectordb

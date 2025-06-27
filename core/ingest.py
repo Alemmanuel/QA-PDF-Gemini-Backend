@@ -1,6 +1,7 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from core.vector import get_vectorstore
+import os
 
 def process_pdf(pdf_path):
     loader = PyPDFLoader(pdf_path)
@@ -12,6 +13,8 @@ def process_pdf(pdf_path):
     )
     docs = splitter.split_documents(documents)
 
-    vectordb = get_vectorstore()
+    # Usar /tmp/vectorstore para compatibilidad con Render
+    vectorstore_path = os.environ.get('VECTORSTORE_PATH', '/tmp/vectorstore')
+    vectordb = get_vectorstore(vectorstore_path)
     vectordb.add_documents(docs)
     vectordb.persist()
