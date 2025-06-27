@@ -17,7 +17,6 @@ def upload_pdf():
             shutil.rmtree(vectorstore_path)
             print(f"[DEBUG] Vectorstore anterior eliminada: {vectorstore_path}")
         os.makedirs(vectorstore_path, exist_ok=True)
-        # Asegurar permisos de escritura
         os.chmod(vectorstore_path, 0o777)
     except Exception as e:
         print(f"[ERROR] No se pudo eliminar o crear vectorstore: {e}")
@@ -28,6 +27,12 @@ def upload_pdf():
     file_path = os.path.join(vectorstore_path, file.filename)
     print(f"[DEBUG] Guardando archivo en {file_path}")
     file.save(file_path)
+    # --- FORZAR PERMISOS 777 RECURSIVOS EN /tmp/vectorstore ---
+    for root, dirs, files in os.walk(vectorstore_path):
+        for d in dirs:
+            os.chmod(os.path.join(root, d), 0o777)
+        for f in files:
+            os.chmod(os.path.join(root, f), 0o777)
     try:
         from core import ingest
         ingest.process_pdf(file_path)
