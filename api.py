@@ -56,6 +56,8 @@ def ask():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Endpoint /clear-cache eliminado para dejar el backend limpio y funcional
+
 # Servir archivos estáticos del frontend
 @app.route('/')
 def serve_index():
